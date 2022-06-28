@@ -9,11 +9,12 @@ class HelloOrderView(generics.GenericAPIView):
         return Response(data={"message":"Hello Orders"}, status=status.HTTP_200_OK)
 
 class OrderCreateListView(generics.GenericAPIView):
-    serializer_class = serializers.OrderCreatiobSerializer
+    serializer_class = serializers.OrderSerializer
+    queryset = Order.objects.all()
 
     def get(self, request):
         orders = Order.objects.all()
-        serializer = self.serializer_class(instance=orders)
+        serializer = self.serializer_class(instance=orders, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
