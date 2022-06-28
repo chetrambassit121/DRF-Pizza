@@ -9,7 +9,7 @@ class UserCreationSerializer(serializers.ModelSerializer):
     username=serializers.CharField(max_length=40,allow_blank=True)
     email=serializers.EmailField(max_length=80,allow_blank=False)
     phone_number=PhoneNumberField(allow_null=False,allow_blank=False)
-    password=serializers.CharField(allow_blank=False,write_only=True)
+    password=serializers.CharField(min_length=8, allow_blank=False,write_only=True)
 
 
     class Meta:

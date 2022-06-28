@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from . import serializers
 from .models import Order
-from rest_framework.permissions import IsAuthenticated 
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from authentication.models import User
 
 class HelloOrderView(generics.GenericAPIView):
@@ -13,7 +13,7 @@ class HelloOrderView(generics.GenericAPIView):
 class OrderCreateListView(generics.GenericAPIView):
     serializer_class = serializers.OrderSerializer
     queryset = Order.objects.all()
-    permission_classes=[IsAuthenticated]
+    permission_classes=[IsAuthenticatedOrReadOnly]
 
     def get(self, request):
         orders = Order.objects.all()
@@ -36,7 +36,7 @@ class OrderCreateListView(generics.GenericAPIView):
 
 class OrderDetailView(generics.GenericAPIView):
     serializer_class=serializers.OrderDetailSerializer
-    permission_classes=[IsAuthenticated]
+    
 
     def get(self, request, order_id):
         order=get_object_or_404(Order, pk=order_id)
@@ -67,13 +67,12 @@ class OrderDetailView(generics.GenericAPIView):
 
 
 class UpdateOrderStatusView(generics.GenericAPIView):
-    
     serializer_class=serializers.OrderStatusUpdateSerializer
-
+    permission_classes=[IsAdminUser]
     def put(self, request,order_id):
         order = get_object_or_404(Order,pk=order_id)
-
         serializer = self.serializer_class(instance=order, data=request.data)
+        permission_classes=[IsAdminUser]
 
         if serializer.is_valid():
             serializer.save()
@@ -102,10 +101,10 @@ class UserOrderDetailView(generics.GenericAPIView):
     serializer_class=serializers.OrderSerializer
     permission_classes=[IsAuthenticated]
 
-    def get(self, request, user_id,order_id):
+    def get(self, request, user_id, order_id):
         user=User.objects.get(pk=user_id)
 
-        order=Order.objects.all().filter(customer=user).filter(pk=order_id)
+        order=Order.objects.all().filter(customer=user).get(pk=order_id)
 
 
         serializer=self.serializer_class(instance=order)
