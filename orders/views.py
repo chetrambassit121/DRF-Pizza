@@ -93,6 +93,24 @@ class UserOrdersView(generics.GenericAPIView):
 
         orders=Order.objects.all().filter(customer=user)
 
-        serializer=self.serializer_class(instance=orders,many=True)
+        serializer=self.serializer_class(instance=orders, many=True)
 
-        return Response(data=serializer.data,status=status.HTTP_200_OK)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class UserOrderDetailView(generics.GenericAPIView):
+    serializer_class=serializers.OrderSerializer
+    permission_classes=[IsAuthenticated]
+
+    def get(self, request, user_id,order_id):
+        user=User.objects.get(pk=user_id)
+
+        order=Order.objects.all().filter(customer=user).filter(pk=order_id)
+
+
+        serializer=self.serializer_class(instance=order)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+
