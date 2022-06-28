@@ -63,3 +63,6 @@ class OrderDetailView(generics.GenericAPIView):
         order.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+

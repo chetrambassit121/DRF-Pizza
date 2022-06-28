@@ -24,3 +24,11 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model=Order 
         fields=['id', 'order_status', 'size', 'quantity','flavour', 'placed_at', 'updated_at']
+
+
+class OrderStatusUpdateSerializer(serializers.ModelSerializer):
+    order_status = serializers.CharField(max_length=25)
+
+    class Meta:
+        model=Order
+        fields=['order_status']
