@@ -34,6 +34,8 @@ class OrderCreateListView(generics.GenericAPIView):
         return Response(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST)   
 
 class OrderDetailView(generics.GenericAPIView):
+    serializer_class=serializers.OrderSerializer
+    permission_classes=[IsAuthenticated]
 
     def get(self, request, order_id):
         order=get_object_or_404(Order, pk=order_id)
