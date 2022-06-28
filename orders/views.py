@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from . import serializers
 from .models import Order
 from rest_framework.permissions import IsAuthenticated 
+from authentication.models import User
 
 class HelloOrderView(generics.GenericAPIView):
     def get(self,request):
@@ -80,3 +81,18 @@ class UpdateOrderStatusView(generics.GenericAPIView):
             return Response(status=status.HTTP_200_OK, data=serializer.data)
 
         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+
+
+class UserOrdersView(generics.GenericAPIView):
+    serializer_class=serializers.OrderSerializer
+    permission_classes=[IsAuthenticated]
+
+  
+    def get(self,request,user_id):
+        user=User.objects.get(pk=user_id)
+
+        orders=Order.objects.all().filter(customer=user)
+
+        serializer=self.serializer_class(instance=orders,many=True)
+
+        return Response(data=serializer.data,status=status.HTTP_200_OK)
