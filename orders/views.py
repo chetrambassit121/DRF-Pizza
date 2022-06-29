@@ -5,22 +5,25 @@ from . import serializers
 from .models import Order
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from authentication.models import User
+from drf_yasg.utils import swagger_auto_schema
 
-class HelloOrderView(generics.GenericAPIView):
-    def get(self,request):
-        return Response(data={"message":"Hello Orders"}, status=status.HTTP_200_OK)
+
+# class HelloOrderView(generics.GenericAPIView):
+#     def get(self,request):
+#         return Response(data={"message":"Hello Orders"}, status=status.HTTP_200_OK)
 
 class OrderCreateListView(generics.GenericAPIView):
     serializer_class = serializers.OrderSerializer
     queryset = Order.objects.all()
     permission_classes=[IsAuthenticatedOrReadOnly]
 
+    @swagger_auto_schema(operation_summary="Get all Orders")
     def get(self, request):
         orders = Order.objects.all()
         serializer = self.serializer_class(instance=orders, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-
+    @swagger_auto_schema(operation_summary="Create an order")
     def post(self, request):
         data=request.data
         serializer=self.serializer_class(data=data)
@@ -37,7 +40,7 @@ class OrderCreateListView(generics.GenericAPIView):
 class OrderDetailView(generics.GenericAPIView):
     serializer_class=serializers.OrderDetailSerializer
     
-
+    @swagger_auto_schema(operation_summary="View Details of an order by id")
     def get(self, request, order_id):
         order=get_object_or_404(Order, pk=order_id)
 
@@ -46,6 +49,7 @@ class OrderDetailView(generics.GenericAPIView):
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(operation_summary="Update an order by id")
     def put(self, request, order_id):
         order = get_object_or_404(Order, pk=order_id)
         
@@ -58,6 +62,7 @@ class OrderDetailView(generics.GenericAPIView):
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(operation_summary="Delete an order based on id")
     def delete(self, request, order_id):
         order = get_object_or_404(Order,id=order_id)
 
@@ -69,6 +74,8 @@ class OrderDetailView(generics.GenericAPIView):
 class UpdateOrderStatusView(generics.GenericAPIView):
     serializer_class=serializers.OrderStatusUpdateSerializer
     permission_classes=[IsAdminUser]
+
+    @swagger_auto_schema(operation_summary="Update an order status")
     def put(self, request,order_id):
         order = get_object_or_404(Order,pk=order_id)
         serializer = self.serializer_class(instance=order, data=request.data)
@@ -86,7 +93,7 @@ class UserOrdersView(generics.GenericAPIView):
     serializer_class=serializers.OrderSerializer
     permission_classes=[IsAuthenticated]
 
-  
+    @swagger_auto_schema(operation_summary="Get orders based on User")
     def get(self,request,user_id):
         user=User.objects.get(pk=user_id)
 
@@ -101,6 +108,7 @@ class UserOrderDetailView(generics.GenericAPIView):
     serializer_class=serializers.OrderSerializer
     permission_classes=[IsAuthenticated]
 
+    @swagger_auto_schema(operation_summary="Get a Users order based on id")
     def get(self, request, user_id, order_id):
         user=User.objects.get(pk=user_id)
 
